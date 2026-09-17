@@ -14,6 +14,22 @@ st.set_page_config(
     layout="wide"
 )
 
+st.sidebar.title("About Project")
+
+st.sidebar.write(
+    "AI Ramp Walk Performance Analyzer "
+    "analyzes walking posture and movement "
+    "using pose landmarks."
+)
+
+st.sidebar.write("Scoring Areas:")
+st.sidebar.write("• Posture")
+st.sidebar.write("• Shoulder Movement")
+st.sidebar.write("• Arm Movement")
+st.sidebar.write("• Walking Stability")
+st.sidebar.write("• Walking Consistency")
+st.sidebar.write("• Head Presentation")
+
 st.title("AI Ramp Walk Performance Analyzer")
 st.write(
     "Upload a ramp walk video and get an automatic performance dashboard."
@@ -35,6 +51,7 @@ if uploaded_video is not None:
     if st.button("Analyze Video"):
 
         st.info("AI analysis started...")
+        st.write("Processing video... Please wait.")
 
         # Save uploaded video temporarily
         with tempfile.NamedTemporaryFile(
@@ -96,6 +113,24 @@ if uploaded_video is not None:
 
             # ---------------- FRAME ANALYSIS ----------------
 
+            # ---------------- OUTPUT VIDEO ----------------
+
+            output_video_path = os.path.join(
+    tempfile.gettempdir(),
+    "ramp_walk_skeleton.avi"
+)
+            fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+            out = cv2.VideoWriter(
+                output_video_path,
+                fourcc,
+                fps,
+                (width, height)
+            )
+
             while True:
 
                 ret, frame = cap.read()
@@ -127,6 +162,46 @@ if uploaded_video is not None:
                     detected_frames += 1
 
                     pose = result.pose_landmarks[0]
+                    # Draw pose skeleton on video
+                    connections = [
+                        (0, 11), (0, 12),
+                        (11, 12),
+                        (11, 13), (13, 15),
+                        (12, 14), (14, 16),
+                        (11, 23), (12, 24),
+                        (23, 24),
+                        (23, 25), (25, 27),
+                        (24, 26), (26, 28)
+                        ]
+
+                    for start, end in connections:
+
+                        x1 = int(pose[start].x * width)
+                        y1 = int(pose[start].y * height)
+
+                        x2 = int(pose[end].x * width)
+                        y2 = int(pose[end].y * height)
+
+                    cv2.line(
+                        frame,
+                        (x1, y1),
+                        (x2, y2),
+                        (0, 255, 0),
+                        3
+                    )
+
+                    for landmark in pose:
+
+                        x = int(landmark.x * width)
+                        y = int(landmark.y * height)
+
+                        cv2.circle(
+                            frame,
+                            (x, y),
+                            5,
+                            (0, 0, 255),
+                            -1
+                        )
 
                     nose = pose[0]
 
@@ -206,11 +281,30 @@ if uploaded_video is not None:
                             shoulder_center_x
                         )
                     )
+                out.write(frame)
 
                 frame_count += 1
 
+            out.release()
+            st.write("Output video path:",output_video_path)
+            st.write("Output video size:",os.path.getsize(output_video_path))
             cap.release()
             landmarker.close()
+            if os.path.exists(output_video_path):
+                st.subheader("Analyzed Skeleton Video")
+
+                video_file = open(output_video_path, "rb")
+                video_bytes = video_file.read()
+
+                st.video(video_bytes)
+                st.download_button(
+                    label="Download Skeleton Video",
+                    data=video_bytes,
+                    file_name="ramp_walk_skeleton.avi",
+                    mime="video/x-msvideo"
+                )
+
+                video_file.close()
 
             # ---------------- CHECK DETECTION ----------------
 
