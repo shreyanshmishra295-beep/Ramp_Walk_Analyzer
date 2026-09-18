@@ -519,7 +519,7 @@ if uploaded_video is not None:
                 )
 
                 ax.set_title(
-                    "Ramp Walk Performance Analysis"
+                    "Ramp Walk Performance Analysis",
                     pad=20
                 )
 
