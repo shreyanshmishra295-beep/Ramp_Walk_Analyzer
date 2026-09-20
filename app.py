@@ -223,7 +223,6 @@ if uploaded_video is not None:
                             shoulder_center_x
                         )
                     )
-                out.write(frame)
 
                 frame_count += 1
 
