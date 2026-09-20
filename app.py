@@ -162,46 +162,6 @@ if uploaded_video is not None:
                     detected_frames += 1
 
                     pose = result.pose_landmarks[0]
-                    # Draw pose skeleton on video
-                    connections = [
-                        (0, 11), (0, 12),
-                        (11, 12),
-                        (11, 13), (13, 15),
-                        (12, 14), (14, 16),
-                        (11, 23), (12, 24),
-                        (23, 24),
-                        (23, 25), (25, 27),
-                        (24, 26), (26, 28)
-                        ]
-
-                    for start, end in connections:
-
-                        x1 = int(pose[start].x * width)
-                        y1 = int(pose[start].y * height)
-
-                        x2 = int(pose[end].x * width)
-                        y2 = int(pose[end].y * height)
-
-                    cv2.line(
-                        frame,
-                        (x1, y1),
-                        (x2, y2),
-                        (0, 255, 0),
-                        3
-                    )
-
-                    for landmark in pose:
-
-                        x = int(landmark.x * width)
-                        y = int(landmark.y * height)
-
-                        cv2.circle(
-                            frame,
-                            (x, y),
-                            5,
-                            (0, 0, 255),
-                            -1
-                        )
 
                     nose = pose[0]
 
