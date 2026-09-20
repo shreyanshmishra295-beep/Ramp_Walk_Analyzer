@@ -226,7 +226,6 @@ if uploaded_video is not None:
 
                 frame_count += 1
 
-            out.release()
             st.write("Output video path:",output_video_path)
             st.write("Output video size:",os.path.getsize(output_video_path))
             cap.release()
