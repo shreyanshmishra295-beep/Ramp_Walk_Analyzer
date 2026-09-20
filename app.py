@@ -290,21 +290,6 @@ if uploaded_video is not None:
             st.write("Output video size:",os.path.getsize(output_video_path))
             cap.release()
             landmarker.close()
-            if os.path.exists(output_video_path):
-                st.subheader("Analyzed Skeleton Video")
-
-                video_file = open(output_video_path, "rb")
-                video_bytes = video_file.read()
-
-                st.video(video_bytes)
-                st.download_button(
-                    label="Download Skeleton Video",
-                    data=video_bytes,
-                    file_name="ramp_walk_skeleton.avi",
-                    mime="video/x-msvideo"
-                )
-
-                video_file.close()
 
             # ---------------- CHECK DETECTION ----------------
 
