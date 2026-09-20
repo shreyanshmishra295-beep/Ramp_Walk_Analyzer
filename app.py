@@ -226,8 +226,7 @@ if uploaded_video is not None:
 
                 frame_count += 1
 
-            st.write("Output video path:",output_video_path)
-            st.write("Output video size:",os.path.getsize(output_video_path))
+        
             cap.release()
             landmarker.close()
 
